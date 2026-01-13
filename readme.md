@@ -15,7 +15,7 @@ A command-line tool for testing APIs using YAML configuration files.
 - [x] Numeric comparison operators
 - [x] Custom request headers
 - [x] Request duration tracking
-- [x] Color-coded test reports
+- [ ] Color-coded test reports
 - [ ] Query parameter support
 - [ ] Authentication presets
 - [ ] Test dependencies and chaining
