@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/dawgdevv/Probe/internal/config"
 	"github.com/dawgdevv/Probe/internal/executor"
 	"github.com/dawgdevv/Probe/pkg/models"
 )
@@ -23,7 +24,10 @@ func NewRunner(options RunOptions) *Runner {
 
 // RunSuite executes all tests in a suite and returns the results
 func (r *Runner) RunSuite(suite *models.TestSuite) ([]executor.Result, error) {
-	baseURL := suite.Env["base_url"]
+	// Resolve inter-variable references in env
+	resolvedEnv := config.ResolveEnv(suite.Env)
+
+	baseURL := resolvedEnv["base_url"]
 	if baseURL == "" {
 		return nil, fmt.Errorf("base_url not defined in env")
 	}
@@ -49,7 +53,7 @@ func (r *Runner) RunSuite(suite *models.TestSuite) ([]executor.Result, error) {
 			defer wg.Done()
 			defer func() { <-sem }() // Release semaphore
 
-			result := executor.RunTest(baseURL, suite.Env, t)
+			result := executor.RunTest(baseURL, resolvedEnv, t)
 
 			// Send to progress callback if configured
 			if r.options.ProgressCallback != nil {
